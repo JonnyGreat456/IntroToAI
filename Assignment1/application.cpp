@@ -19,7 +19,9 @@
 #include "prx/utilities/communication/tf_broadcaster.hpp"
 
 // #include <boost/range/adaptor/map.hpp> //adaptors
+#include <iostream>
 #include <fstream>
+#include <string>
 #include "prx/utilities/definitions/sys_clock.hpp"
 #include <pluginlib/class_list_macros.h>
 #include "prx_core/send_plants_srv.h"
@@ -28,7 +30,6 @@
 #include <boost/assign/list_of.hpp>
 #include "prx/utilities/graph/undirected_node.hpp"
 
-#include <iostream>
 
 PLUGINLIB_EXPORT_CLASS(prx::util::util_application_t, prx::util::util_application_t)
 
@@ -329,13 +330,31 @@ namespace prx
             for(int j=initial_j-1; j>=goal_j; --j)                                    //################
                 path.push_back(std::make_pair(goal_i,j));                             //################ 
             //If using C++, you can choose to populate the following function in search.cpp 
-            //path = searcher->search();           
-            //################THE PRECEDING CODE SHOULD BE REPLACED BY YOUR SOLUTION####################*/
+            //path = searcher->search();*/
+            //################THE PRECEDING CODE SHOULD BE REPLACED BY YOUR SOLUTION####################
+
+			std::system("python path_finder.py "<<initial_i<<" "<<initial_j<<" "<<goal_i<<" "<<goal_j<<" "<<enviroment_file<<" path.txt");
+
+			
+			// read from and process path.txt
+            string line;
+            ifstream path_file ("path.txt");
+            if(path_file.is_open())
+            {
+                while(getline(path_file, line))
+                {
+                    // process line
+                }
+            }
+            else
+            {
+                // throw error
+            }
+
 
             //You can invoke your code using an std::system call, or write your code in C++ and include it here, or invoke your code through ROS
 			// need to pass start coords, goal coords, environment, target file name
-			
-			std::system("python path_finder.py "<<initial_i<<" "<<initial_j<<" "<<goal_i<<" "<<goal_j<<" "<<enviroment_file<<" path.txt");
+            
             //Global variable environment_file has the path to the maze file
             //###############################################################
             //###############################################################
@@ -346,9 +365,6 @@ namespace prx
             //###############################################################
             //###############################################################
             //###############################################################
-			
-			// read from and process path.txt
-
 
 
             //Once a path has been reconstructed it is returned
