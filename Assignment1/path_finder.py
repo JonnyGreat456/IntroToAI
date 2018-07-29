@@ -134,7 +134,7 @@ def PathFinder(map, initial_x, initial_y, goal_x, goal_y):
             else:
                 if n not in open_list:
                     open_list.append(n)
-                    numExpansions = numExpansions + 1
+                    #numExpansions = numExpansions + 1
                 else:
                     found_n = open_list[open_list.index(n)]
                     if(n.f < found_n.f):
