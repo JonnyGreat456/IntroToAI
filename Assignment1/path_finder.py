@@ -121,13 +121,17 @@ def PathFinder(map, initial_x, initial_y, goal_x, goal_y):
         if(q.x == GOAL_NODE.x AND q.y == GOAL_NODE.y):
             pathCost, path = path_build(GOAL_NODE)
             return pathCost, path
-        if q not in closed_list:
-            neighbors = generateNeighbors(map, q)
-            for n in neighbors:
-                n.g = g(q,n)
-                n.h = h(n,GOAL_NODE)
-                n.f = n.g + (WEIGHT * n.h)
-                n.parent = q
+        closed_list.append(q)
+        numExpansions = numExpansions + 1
+        neighbors = generateNeighbors(map, q)
+        for n in neighbors:
+            n.g = g(q,n)
+            n.h = h(n,GOAL_NODE)
+            n.f = n.g + (WEIGHT * n.h)
+            n.parent = q
+            if n in closed_list:
+                pass
+            else:
                 if n not in open_list:
                     open_list.append(n)
                     numExpansions = numExpansions + 1
