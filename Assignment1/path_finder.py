@@ -125,7 +125,7 @@ def PathFinder(map, initial_x, initial_y, goal_x, goal_y):
             neighbors = generateNeighbors(map, q)
             for n in neighbors:
                 n.g = g(q,n)
-                n.h = h(q,GOAL_NODE)
+                n.h = h(n,GOAL_NODE)
                 n.f = n.g + (WEIGHT * n.h)
                 n.parent = q
                 if n not in open_list:
