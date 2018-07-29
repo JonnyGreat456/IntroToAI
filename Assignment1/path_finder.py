@@ -1,4 +1,7 @@
 import math
+import sys
+
+int numrow, numcol
 
 class Node:
     def __init__(self, x, y, value, f = 0, g = 0, h = 0, parent = 0):
@@ -64,3 +67,12 @@ def PathFinder(map, initial_x, initial_y, goal_x, goal_y):
         else:
             closed_list.append((q.x, q.y))
             # create a generateNeighbors(Node) function
+
+def getargs():
+    # sys.argv stores the command line args
+    initial_x = sys.argv[0]
+    initial_y = sys.argv[1]
+    goal_x = sys.argv[2]
+    goal_y = sys.argv[3]
+    environment_file_path = sys.argv[4]
+    output_file = sys.argv[5]
