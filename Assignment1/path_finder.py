@@ -11,7 +11,7 @@ class Node:
     def update_f(self, node):
         self.f = node.f
     def location(self):
-        return self.x, self.y
+        return (self.x, self.y)
 ########################################################################################
 ### global variables
 ########################################################################################
@@ -36,7 +36,8 @@ def generateNeighbors(map, origin_node):
     """
 
     neighbors = []
-    x, y = origin_node.location()
+    x = origin_node.location()[0]
+    y = origin_node.location()[1]
     if(x - 1 < 0):
         pass
     else:
@@ -78,6 +79,13 @@ def min_f(queue):
         else:
             min_value_index = i
     return min_value_index
+def find(queue, targetNode):
+    """ looks for a node in a queue and returns its index or -1 if node is not found """
+    for i in range(0,len(queue)):
+        if(targetNode.location() == queue[i].location()):
+            return i
+    return -1
+    
 def path_build(node):
     """ This function will iterate through a path through a list of its parents """
     rPath = list()
@@ -129,14 +137,14 @@ def PathFinder(map, initial_x, initial_y, goal_x, goal_y):
             n.h = h(n,GOAL_NODE)
             n.f = n.g + (WEIGHT * n.h)
             n.parent = q
-            if n in closed_list:
+            if(find(closed_list,n) > -1):#has already been explored or expanded
                 pass
             else:
-                if n not in open_list:
+                if(find(open_list,n) == -1): #not found in the openList
                     open_list.append(n)
                     #numExpansions = numExpansions + 1
                 else:
-                    found_n = open_list[open_list.index(n)]
+                    found_n = open_list[find(open_list,n)]
                     if(n.f < found_n.f):
                         found_n.update_f(n)
        
