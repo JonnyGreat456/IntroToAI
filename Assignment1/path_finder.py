@@ -137,7 +137,7 @@ def PathFinder(map, initial_x, initial_y, goal_x, goal_y):
 
     while(len(open_list) != 0):
         q = open_list.pop(min_f(open_list))
-        if(q.x == GOAL_NODE.x AND q.y == GOAL_NODE.y):
+        if(q.x == GOAL_NODE.x and q.y == GOAL_NODE.y):
             pathCost, path = path_build(GOAL_NODE)
             return pathCost, path
         closed_list.append(q)
@@ -201,10 +201,10 @@ def main():
     # get the arguments into global variables
     args = vars(parser.parse_args())
     environment_file_path = args['filename']
-    startX = args['startx']
-    startY = args['starty']
-    goalX = args['goalx']
-    goalY = args['goaly']
+    startX = int(args['startx'])
+    startY = int(args['starty'])
+    goalX = int(args['goalx'])
+    goalY = int(args['goaly'])
     
     processMap(environment_file_path)
     print PathFinder(MAP,startX,startY,goalX,goalY)
