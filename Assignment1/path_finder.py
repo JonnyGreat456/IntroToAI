@@ -174,7 +174,6 @@ def output_to_file():
 
     output_file = open(Output_File, "w+")
 
-    output_file.write("%d\n" % PATH_COST)
     for node in PATH:
         output_file.write("%d %d\n" % (node[0], node[1]))
 

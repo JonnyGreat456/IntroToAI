@@ -22,6 +22,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cstdlib>
 #include "prx/utilities/definitions/sys_clock.hpp"
 #include <pluginlib/class_list_macros.h>
 #include "prx_core/send_plants_srv.h"
@@ -338,12 +339,15 @@ namespace prx
 			
 			// read from and process path.txt
             string line;
+            int x, y;
             ifstream path_file ("path.txt");
             if(path_file.is_open())
             {
                 while(getline(path_file, line))
                 {
-                    // process line
+                    int delim = line.find(" ");
+                    x = stoi(line.substr(0, delim))
+                    y = stoi(line.substr(delim + 1, length(line)));
                 }
             }
             else
