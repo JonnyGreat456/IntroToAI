@@ -101,7 +101,7 @@ def path_build(node):
     pathCost = node.g
     ptr = node
     while(ptr != None):
-        rPath.append((ptr.x,ptr.y))
+        rPath.append(ptr.location())
         #pathCost = pathCost + ptr.g
         ptr = ptr.parent
     numSteps = len(rPath) - 1
