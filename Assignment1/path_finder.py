@@ -105,7 +105,8 @@ def path_build(node):
         #pathCost = pathCost + ptr.g
         ptr = ptr.parent
     numSteps = len(rPath) - 1
-    return PathCost, rPath.reverse()
+    rPath.reverse()
+    return PathCost, rPath
         
     
         
