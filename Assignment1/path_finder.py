@@ -63,7 +63,8 @@ def generateNeighbors(map, origin_node):
 def h(origin_node, goal_node): 
     """ function will compute the heuristic. It will compute the manhattan distance if zero_heuristic variable is one and
     and the zero heuristic if zero is zero """
-    return ZERO_HEURISTIC * round( math.sqrt(((goal_node.x - origin_node.x)**2)+((goal_node.y - origin_node.y)**2)), 2)
+    #return ZERO_HEURISTIC * round( math.sqrt(((goal_node.x - origin_node.x)**2)+((goal_node.y - origin_node.y)**2)), 2)
+    return ZERO_HEURISTIC * round((math.fabs(origin_node.x - goal_node.x) + math.fabs(origin_node.y - goal_node.y)),2)
 
 def g(origin_node, node):
     """ returns cost from the origin node to any node """
