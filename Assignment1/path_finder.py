@@ -98,11 +98,11 @@ def path_build(node):
     """ This function will iterate through a path through a list of its parents """
     global numSteps
     rPath = list()
-    pathCost = 0
+    pathCost = node.g
     ptr = node
     while(ptr != None):
         rPath.append((ptr.x,ptr.y))
-        pathCost = pathCost + ptr.g
+        #pathCost = pathCost + ptr.g
         ptr = ptr.parent
     numSteps = len(rPath) - 1
     return PathCost, rPath.reverse()
