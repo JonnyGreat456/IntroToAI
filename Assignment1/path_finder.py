@@ -16,10 +16,15 @@ class Node:
 ########################################################################################
 ### global variables
 ########################################################################################
+ROW_NUM = 0
+COL_NUM = 0
 START_NODE = None
 GOAL_NODE = None
 WEIGHT = 1
 ZERO_HEURISTICS = 1
+output_file = None
+MAP = []
+enviroment_file_path = None
 numExpansions = 0
 numSteps = 0
 
@@ -155,6 +160,34 @@ def PathFinder(map, initial_x, initial_y, goal_x, goal_y):
                         found_n.update_f(n)
                         
 
-    
+def processMap(map_file_path):
+    global ROW_NUM, COL_NUM, MAP
+    map_file = open(map_file_path, "r")
+    ROW_NUM = int(map_file.readline())
+    COL_NUM = int(map_file.readline())
+
+    for i in range(ROW_NUM):
+        line = map_file.readline().split()
+        num_list = []
+        for j in range(COL_NUM):
+            num_list.append(int(line[j]))
+        MAP.append(num_list)
+
+"""def getArgs():
+    # retrieves command line arguments and stores them in global vars
+    global START_NODE, GOAL_NODE, Output_File
+    START_NODE = Node(sys.argv[0], sys.argv[1])
+    GOAL_NODE = Node(sys.argv[2], sys.argv[3])
+    enviroment_file_path = sys.argv[4]
+    Output_File = sys.argv[5]
+
+    processMap(enviroment_file_path)
+ """
+
+def output_to_file(pathcost, path):
+global Output_File
        
-# create a generateNeighbors(Node) function
+def main():
+
+if __name__ == "__main__":
+    main()
