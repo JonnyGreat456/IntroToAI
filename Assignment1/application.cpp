@@ -18,7 +18,7 @@
 
 #include "prx/utilities/communication/tf_broadcaster.hpp"
 
-// #include <boost/range/adaptor/map.hpp> //adaptors
+#include <boost/range/adaptor/map.hpp> //adaptors
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -334,20 +334,20 @@ namespace prx
             //path = searcher->search();*/
             //################THE PRECEDING CODE SHOULD BE REPLACED BY YOUR SOLUTION####################
 
-			std::system("python path_finder.py "<<initial_i<<" "<<initial_j<<" "<<goal_i<<" "<<goal_j<<" "<<enviroment_file<<" path.txt");
+			std::system("python path_finder.py "<<itoa(initial_i)<<" "<<std::itoa(initial_j)<<" "<<std::itoa(goal_i)<<" "<<std::itoa(goal_j)<<" "<<enviroment_file<<" path.txt");
 
 			
 			// read from and process path.txt
-            string line;
+            std::string line;
             int x, y;
-            ifstream path_file ("path.txt");
+            std::ifstream path_file ("path.txt");
             if(path_file.is_open())
             {
                 while(getline(path_file, line))
                 {
                     int delim = line.find(" ");
-                    x = stoi(line.substr(0, delim))
-                    y = stoi(line.substr(delim + 1, length(line)));
+                    x = std::stoi(line.substr(0, delim));
+                    y = std::stoi(line.substr(delim + 1, length(line)));
                 }
             }
             else
