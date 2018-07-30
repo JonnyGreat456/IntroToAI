@@ -12,7 +12,7 @@ class Node:
     def update_f(self, node):
         self.f = node.f
     def location(self):
-        return self.x, self.y
+        return (self.x, self.y)
 ########################################################################################
 ### global variables
 ########################################################################################
@@ -24,6 +24,8 @@ WEIGHT = 1
 ZERO_HEURISTICS = 1
 Output_File = None
 MAP = []
+PATH_COST = 0
+PATH = []
 #numExpansions = 0
 #numSteps = 0
 
@@ -41,7 +43,8 @@ def generateNeighbors(origin_node):
     """
 
     neighbors = []
-    x, y = origin_node.location()
+    x = origin_node.location()[0]
+    y = origin_node.location()[1]
     if(x - 1 < 0):
         pass
     else:
@@ -73,7 +76,7 @@ def h(node):
 def g(node):
     """ returns cost from the origin node to any node """
     #return round( math.sqrt(((node.x - origin_node.x)**2)+((node.y - origin_node.y)**2)), 2)
-    return node.parent.g + (-1) * (MAP[node.x][node.y] - 2)
+    return node.parent.g + 1
 
 def min_f(queue):
     """ finds the index of the node with the lowest f value in open_list """
@@ -89,14 +92,15 @@ def min_f(queue):
 
 def path_build(node):
     """ This function will iterate through a path through a list of its parents """
-    rPath = list()
+    rPath = []
     ptr = node
     pathCost = node.g
     while(ptr != None):
         rPath.append((ptr.x,ptr.y))
         ptr = ptr.parent
     #numSteps = len(rPath) - 1
-    return pathCost, rPath.reverse()
+    rPath.reverse()
+    return pathCost, rPath
         
         
 def PathFinder():
@@ -113,11 +117,9 @@ def PathFinder():
     """
 
     #pathExists = True # boolean flag for whether or not path exists, assumed True until determined False don't think we need this
-    global START_NODE, GOAL_NODE
+    global START_NODE, GOAL_NODE, PATH_COST, PATH
 
     open_list = []
-    path = []
-    pathCost = 0
     open_list.append(START_NODE)
     closed_list = []
     neighbors = []
@@ -125,8 +127,8 @@ def PathFinder():
     while(len(open_list) != 0):
         q = open_list.pop(min_f(open_list))
         if(q.x == GOAL_NODE.x and q.y == GOAL_NODE.y):
-            pathCost, path = path_build(q)
-            return pathCost, path
+            PATH_COST, PATH = path_build(q)
+            return PATH_COST, PATH
         if q not in closed_list:
             neighbors = generateNeighbors(q)
             for n in neighbors:
@@ -160,18 +162,23 @@ def processMap(map_file_path):
 def getArgs():
     # retrieves command line arguments and stores them in global vars
     global START_NODE, GOAL_NODE, Output_File
-    START_NODE = Node(sys.argv[0], sys.argv[1])
-    GOAL_NODE = Node(sys.argv[2], sys.argv[3])
-    enviroment_file_path = sys.argv[4]
-    Output_File = sys.argv[5]
+    START_NODE = Node(int(sys.argv[1]), int(sys.argv[2]))
+    GOAL_NODE = Node(int(sys.argv[3]), int(sys.argv[4]))
+    enviroment_file_path = sys.argv[5]
+    Output_File = sys.argv[6]
 
     processMap(enviroment_file_path)
 
-def output_to_file(pathcost, path):
-    global Output_File
+def output_to_file():
+    global Output_File, PATH_COST, PATH
 
-    # do stuff here
+    output_file = open(Output_File, "w+")
 
-# getArgs()
-# pathcost, path = Pathfinder()
-# output_to_file()
+    output_file.write("%d\n" % PATH_COST)
+    for node in PATH:
+        output_file.write("%d %d\n" % (node[0], node[1]))
+
+
+getArgs()
+PathFinder()
+output_to_file()
