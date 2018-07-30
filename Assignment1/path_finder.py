@@ -188,6 +188,26 @@ def output_to_file(pathcost, path):
 global Output_File
        
 def main():
+    global environmen_file_path, MAP
+    parser = argparse.ArgumentParser(description='CS 440 A_star search')
+    parser.add_argument('-f','--filename', help='File for map', required=True)
+    parser.add_argument('-x1','--startx', help='Start position x', required=True)
+    parser.add_argument('-y1','--starty', help='Start position y', required=True)
+    parser.add_argument('-x2','--goalx', help='goal position x', required=True)
+    parser.add_argument('-y2','--goaly', help='goal position y', required=True)
+   
+
+
+    # get the arguments into global variables
+    args = vars(parser.parse_args())
+    environment_file_path = args['filename']
+    startX = args['startx']
+    startY = args['starty']
+    goalX = args['goalx']
+    goalY = args['goaly']
+    
+    processMap(environment_file_path)
+    print PathFinder(MAP,startX,startY,goalX,goalY)
 
 if __name__ == "__main__":
     main()
