@@ -345,21 +345,23 @@ namespace prx
             //###############################################################
             //###############################################################
             int x, y;
+	    //getting command to run.
             std::string command = "python /home/postalmist/prx_core_ws/src/prx_core/prx/utilities/applications/search.py -f ";
             command += environment_file;
             command += " -x1 " + std::to_string(initial_i) + " -y1 " + std::to_string(initial_j) + " -x2 " + std::to_string(goal_i) + " -y2 " + std::to_string(goal_j);
             
-            std::cout << command << std::endl;
-            std::cout << command.c_str() << std::endl;
+            //std::cout << command << std::endl;
+            //std::cout << command.c_str() << std::endl;
             
             system(command.c_str());
-            
+            //put reads the file with the path
             std::ifstream infile("/home/postalmist/pathlist/path.txt");
             
             if(infile.is_open())
             {
 			    while(infile >> x >> y)
 			    {
+				    //pushes the points in a vector 
 					path.push_back(std::make_pair(x,y));
 				}	
 				
