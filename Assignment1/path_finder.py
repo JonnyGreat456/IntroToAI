@@ -2,7 +2,7 @@ import math
 import argparse
 
 class Node:
-    def __init__(self, x, y, f = 0, g = 0, h = 0, parent = 0):
+    def __init__(self, x, y, f = 0, g = 0, h = 0, parent = None):
         self.x = x # row
         self.y = y # column
         self.f = f # path cost + heuristic
@@ -24,6 +24,7 @@ WEIGHT = 1
 ZERO_HEURISTICS = 1
 output_file = None
 MAP = []
+Output_File = None
 enviroment_file_path = None
 numExpansions = 0
 numSteps = 0
@@ -130,7 +131,7 @@ def PathFinder(map, initial_x, initial_y, goal_x, goal_y):
     path = []
     pathCost = 0
     GOAL_NODE = Node(goal_x,goal_y,0,0)
-    START_NODE = Node(initial_x, initial_y,0,0)
+    START_NODE = Node(initial_x, initial_y,0,0,0,None)
     START_NODE.h = h(START_NODE,GOAL_NODE)
     open_list.append(START_NODE)
     closed_list = []
@@ -174,19 +175,15 @@ def processMap(map_file_path):
             num_list.append(int(line[j]))
         MAP.append(num_list)
 
-"""def getArgs():
-    # retrieves command line arguments and stores them in global vars
-    global START_NODE, GOAL_NODE, Output_File
-    START_NODE = Node(sys.argv[0], sys.argv[1])
-    GOAL_NODE = Node(sys.argv[2], sys.argv[3])
-    enviroment_file_path = sys.argv[4]
-    Output_File = sys.argv[5]
+def output_to_file(path):
+    global Output_File
 
-    processMap(enviroment_file_path)
- """
+    output_file = open(Output_File, "w+")
 
-def output_to_file(pathcost, path):
-global Output_File
+    for node in path:
+        output_file.write("%d %d\n" % (node[0], node[1]))
+        
+    output_file.close()
        
 def main():
     global environmen_file_path, MAP
@@ -208,7 +205,8 @@ def main():
     goalY = int(args['goaly'])
     
     processMap(environment_file_path)
-    print PathFinder(MAP,startX,startY,goalX,goalY)
+    pc, p = PathFinder(MAP,startX,startY,goalX,goalY)
+    output_to_file(p)
 
 if __name__ == "__main__":
     main()
