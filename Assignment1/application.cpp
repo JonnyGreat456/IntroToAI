@@ -19,9 +19,7 @@
 #include "prx/utilities/communication/tf_broadcaster.hpp"
 
 // #include <boost/range/adaptor/map.hpp> //adaptors
-#include <iostream>
 #include <fstream>
-#include <string>
 #include "prx/utilities/definitions/sys_clock.hpp"
 #include <pluginlib/class_list_macros.h>
 #include "prx_core/send_plants_srv.h"
@@ -30,6 +28,7 @@
 #include <boost/assign/list_of.hpp>
 #include "prx/utilities/graph/undirected_node.hpp"
 
+#include <iostream>
 
 PLUGINLIB_EXPORT_CLASS(prx::util::util_application_t, prx::util::util_application_t)
 
@@ -318,43 +317,23 @@ namespace prx
             //Returned vector of coordinates.
             std::vector< std::pair<int, int> > path;
             
+            //path.push_back(std::make_pair(4,4));
 
             // Naive generation of path that has not awareness of the environment
-            /*################COMMENT OUT THE FOLLOWING BLOCK OF CODE TO POPULATE path##################
-            for(int i=initial_i; i<=goal_i; ++i)                                      //################
+            //################COMMENT OUT THE FOLLOWING BLOCK OF CODE TO POPULATE path##################
+           /* for(int i=initial_i; i<=goal_i; ++i)                                      //################
                 path.push_back(std::make_pair(i,initial_j));                          //################            
             for(int i=initial_i; i>=goal_i; --i)                                      //################
                 path.push_back(std::make_pair(i,initial_j));                          //################            
             for(int j=initial_j+1; j<=goal_j; ++j)                                    //################
                 path.push_back(std::make_pair(goal_i,j));                             //################        
             for(int j=initial_j-1; j>=goal_j; --j)                                    //################
-                path.push_back(std::make_pair(goal_i,j));                             //################ 
+                path.push_back(std::make_pair(goal_i,j));   */                          //################ 
             //If using C++, you can choose to populate the following function in search.cpp 
-            //path = searcher->search();*/
+            //path = searcher->search();           
             //################THE PRECEDING CODE SHOULD BE REPLACED BY YOUR SOLUTION####################
 
-			std::system("python path_finder.py "<<initial_i<<" "<<initial_j<<" "<<goal_i<<" "<<goal_j<<" "<<enviroment_file<<" path.txt");
-
-			
-			// read from and process path.txt
-            string line;
-            ifstream path_file ("path.txt");
-            if(path_file.is_open())
-            {
-                while(getline(path_file, line))
-                {
-                    // process line
-                }
-            }
-            else
-            {
-                // throw error
-            }
-
-
             //You can invoke your code using an std::system call, or write your code in C++ and include it here, or invoke your code through ROS
-			// need to pass start coords, goal coords, environment, target file name
-            
             //Global variable environment_file has the path to the maze file
             //###############################################################
             //###############################################################
@@ -365,6 +344,27 @@ namespace prx
             //###############################################################
             //###############################################################
             //###############################################################
+            int x, y;
+            std::string command = "python $PRACSYS_PATH/prx_core/prx/utilities/applications/search.py -f ";
+            command += environment_file;
+            command += " -x1 " + std::to_string(initial_i) + " -y1 " + std::to_string(initial_j) + " -x2 " + std::to_string(goal_i) + " -y2 " + std::to_string(goal_j);
+            
+            std::cout << command << std::endl;
+            std::cout << command.c_str() << std::endl;
+            
+            system(command.c_str());
+            
+            std::ifstream infile("/home/postalmist/pathlist/path.txt");
+            
+            if(infile.is_open())
+            {
+			    while(infile >> x >> y)
+			    {
+					path.push_back(std::make_pair(x,y));
+				}	
+				
+				infile.close();
+			}
 
 
             //Once a path has been reconstructed it is returned

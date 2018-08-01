@@ -1,21 +1,31 @@
 import math
+import os
 import sys
 
-int numrow, numcol
-
 class Node:
-    def __init__(self, x, y, value, f = 0, g = 0, h = 0, parent = 0):
+    def __init__(self, x, y, value):
         self.x = x # row
         self.y = y # column
         self.value = value # 1 for unblocked, 0 for blocked
-        self.f = f # path cost + heuristic
-        self.g = g # path cost
-        self.h = h # heuristic
-        self.parent = parent
-    def update_f():
-        self.f = self.g + self.h
-    def location():
-        return self.x, self.y
+        self.f = 0 # path cost + heuristic
+        self.g = 0 # path cost
+        self.h = 0 # heuristic
+        self.parent = 0
+
+def generateMap(map_filename):
+    map_file = open(map_filename, "r")
+    ROW_NUM = int(map_file.readline())
+    COL_NUM = int(map_file.readline())
+    MAP = []
+
+    for i in range(ROW_NUM):
+        line = map_file.readline().split()
+        num_list = []
+        for j in range(COL_NUM):
+            num_list.append(int(line[j]))
+        MAP.append(num_list)
+
+    return MAP
 
 def generateNeighbors(map, origin_node):
     """
@@ -27,13 +37,127 @@ def generateNeighbors(map, origin_node):
     """
 
     neighbors = []
-    x, y = origin_node.location()
+    x = origin_node.x
+    y = origin_node.y
 
-    if(x == 0): # not done
-        left = Node()
-        if()
-        neighbors.append(left)
-        neighbors.append(right)
+    if(x - 1 < 0):
+        pass
+    else:
+        if(map[x - 1][y] == 1):
+            up = Node(x - 1, y, map[x - 1][y])
+            neighbors.append(up)
+
+    if(x + 1 >= len(map)):
+        pass
+    else:
+        if(map[x + 1][y] == 1):
+            down = Node(x + 1, y, map[x + 1][y])
+            neighbors.append(down)
+
+    if(y - 1 < 0):
+        pass
+    else:
+        if(map[x][y - 1] == 1):
+            left = Node(x, y - 1, map[x][y - 1])
+            neighbors.append(left)
+
+    if(y + 1 >= len(map[x])):
+        pass
+    else:
+        if(map[x][y + 1] == 1):
+            right = Node(x, y + 1, map[x][y + 1])
+            neighbors.append(right)
+
+    return neighbors
+
+def merge(arr, l, m, r):
+    n1 = m - l + 1
+    n2 = r - m
+
+    L = [0] * (n1)
+    R = [0] * (n2)
+
+    for i in range(0, n1):
+        L[i] = arr[l + i]
+
+    for j in range(0, n2):
+        R[j] = arr[m + 1 + j]
+
+    i = 0
+    j = 0
+    k = l
+
+    while((i < n1) and (j < n2)):
+        if(L[i].f <= R[j].f):
+            arr[k] = L[i]
+            i += 1
+        else:
+            arr[k] = R[j]
+            j += 1
+        k += 1
+
+    while(i < n1):
+        arr[k] = L[i]
+        i += 1
+        k += 1
+
+    while(j < n2):
+        arr[k] = R[j]
+        j += 1
+        k += 1
+
+def MergeSort(arr, l, r): # implementation of merge sort for sorting open list
+    if(l < r):
+        m = (l + (r - 1)) / 2
+        MergeSort(arr, l, m)
+        MergeSort(arr, m + 1, r)
+        merge(arr, l, m, r)
+
+def sort_node_list(node_list): # merge sort wrapper function
+    MergeSort(node_list, 0, len(node_list) - 1)
+
+def isNodeInList(node_list, a_node):
+    x = a_node.x
+    y = a_node.y
+    for node in node_list:
+        x2 = node.x
+        y2 = node.y
+        if(x == x2 and y == y2):
+            return True
+        else:
+            continue
+    return False
+
+def isNodeInList2(tuple_list, a_node):
+    x = a_node.x
+    y = a_node.y
+    for t in tuple_list:
+        x2 = t[0]
+        y2 = t[1]
+        if(x == x2 and y == y2):
+            return True
+        else:
+            continue
+    return False
+
+def g(origin_node, node):
+    """ returns cost from the origin node to any node """
+    return round(math.sqrt(((node.x - origin_node.x)**2) + ((node.y - origin_node.y)**2)), 2)
+
+def h(origin_node, goal_node):
+    """ function will compute the heuristic. """
+    return round((math.fabs(origin_node.x - goal_node.x) + math.fabs(origin_node.y - goal_node.y)), 2)
+
+def find(queue, targetNode):
+    """ looks for a node in a queue and returns its index or -1 if node is not found """
+    x = targetNode.x
+    y = targetNode.y
+    for i in range(0,len(queue)):
+        x2 = queue[i].x
+        y2 = queue[i].y
+        if(x == x2 and y == y2):
+            return i
+    return -1
 
 def PathFinder(map, initial_x, initial_y, goal_x, goal_y):
     """
@@ -49,30 +173,43 @@ def PathFinder(map, initial_x, initial_y, goal_x, goal_y):
     """
 
     pathExists = True # boolean flag for whether or not path exists, assumed True until determined False
+    numExpansions = 0
 
     open_list = []
     open_list.append(Node(initial_x, initial_y, map[initial_x][initial_y]))
     closed_list = []
 
     while(len(open_list) != 0):
-        q = open_list[0]
-        for node in open_list: # determine lowest f score in open_list
-            if(node.f < q.f):
-                q = node
-            else:
-                continue
+        sort_node_list(open_list) # determine lowest f score in open_list by sorting on f score
+        q = open_list.pop(0)
         if(q.x == goal_x and q.y == goal_y):
             closed_list.append((q.x, q.y))
+            print('Number of Expansions: %d' % numExpansions)
             return closed_list
         else:
             closed_list.append((q.x, q.y))
-            # create a generateNeighbors(Node) function
+            neighbors = generateNeighbors(map, q)
 
-def getargs():
-    # sys.argv stores the command line args
-    initial_x = sys.argv[0]
-    initial_y = sys.argv[1]
-    goal_x = sys.argv[2]
-    goal_y = sys.argv[3]
-    environment_file_path = sys.argv[4]
-    output_file = sys.argv[5]
+            for n in neighbors:
+                if(isNodeInList2(closed_list, n)):
+                    continue
+                else:
+                    numExpansions += 1
+                    n.g = q.g + g(q, n)
+                    n.h = h(n, Node(goal_x, goal_y, map[goal_x][goal_y]))
+                    n.f = n.g + n.h
+                    n.parent = q
+
+                    if not isNodeInList(open_list, n):
+                        open_list.append(n)
+                    else:
+                        found_n = open_list[find(open_list, n)]
+                        if(n.f < found_n.f):
+                            found_n.f = n.f
+
+
+# Main Execution Test
+prefix = os.environ['PRACSYS_PATH']
+map = generateMap(prefix + '/prx_core/launches/maze')
+path = PathFinder(map, 0, 0, 3, 8)
+print(path)
