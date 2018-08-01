@@ -172,12 +172,22 @@ def getArgs():
 def output_to_file():
     global Output_File, PATH_COST, PATH
 
-    output_file = open(Output_File, "w+")
+    try:
+        output_file = open(Output_File, "w+")
+    except:
+        print "Failed to open " + Output_File
 
+    print PATH
     for node in PATH:
-        output_file.write("%d %d\n" % (node[0], node[1]))
+        try:
+            output_file.write("%d %d\n" % (node[0], node[1]))
+        except:
+            print "Failed to write"
+    
+    output_file.close()
 
 
 getArgs()
 PathFinder()
 output_to_file()
+print "This finished first"

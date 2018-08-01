@@ -23,6 +23,9 @@
 #include <fstream>
 #include <string>
 #include <cstdlib>
+#include <errno.h>
+#include <string.h>
+#include <time.h>
 #include "prx/utilities/definitions/sys_clock.hpp"
 #include <pluginlib/class_list_macros.h>
 #include "prx_core/send_plants_srv.h"
@@ -334,27 +337,43 @@ namespace prx
             //path = searcher->search();*/
             //################THE PRECEDING CODE SHOULD BE REPLACED BY YOUR SOLUTION####################
 
-			std::system("python path_finder.py "<<itoa(initial_i)<<" "<<std::itoa(initial_j)<<" "<<std::itoa(goal_i)<<" "<<std::itoa(goal_j)<<" "<<enviroment_file<<" path.txt");
+            std::string command = "python home/virtualg/prx_core_ws/src/prx_core/prx/utilities/applications/path_finder.py";
+            command += " " + std::to_string(initial_i) + " " + std::to_string(initial_j) + " " + std::to_string(goal_i) + " " + std::to_string(goal_j);
+            command += " " + environment_file + " home/virtualg/prx_core_ws/src/prx_core/prx/utilities/applications/path.txt";
+			// std::system(command.c_str());
+            PRX_PRINT("This finshed second", PRX_TEXT_GREEN);
 
-			
-			// read from and process path.txt
-            std::string line;
-            int x, y;
-            std::ifstream path_file ("path.txt");
-            if(path_file.is_open())
-            {
-                while(getline(path_file, line))
-                {
-                    int delim = line.find(" ");
-                    x = std::stoi(line.substr(0, delim));
-                    y = std::stoi(line.substr(delim + 1, length(line)));
-                }
-            }
-            else
-            {
-                // throw error
-            }
+			// // read from and process path.txt
+            // std::string line;
+            // int num, x, y;
+            // std::ifstream path_file;
+            // try {
+            //     path_file.open("home/virtualg/prx_core_ws/src/prx_core/prx/utilities/applications/path.txt");
+            // } catch (const std::exception& e) {
+            //     PRX_PRINT(e.what(), PRX_TEXT_RED);
+            // }
 
+            // if(errno != 0){
+            //     PRX_PRINT((errno == EWOULDBLOCK), PRX_TEXT_CYAN);
+            //     PRX_FATAL_S(std::strerror(errno));
+            // }
+            
+            // try {
+            //     while(getline(path_file, line))
+            //     {
+            //         int delim = line.find(" ");
+            //         x = std::stoi(line.substr(0, delim));
+            //         y = std::stoi(line.substr(delim + 1, line.length()));
+            //         path.push_back(std::make_pair(x, y));
+            //     }
+            // } catch (const std::exception& e) {
+            //     PRX_PRINT("Exception caught:" << e.what(), PRX_TEXT_RED);
+            // }
+
+
+            PRX_PRINT(std::strerror(errno), PRX_TEXT_RED);
+
+            path_file.close();
 
             //You can invoke your code using an std::system call, or write your code in C++ and include it here, or invoke your code through ROS
 			// need to pass start coords, goal coords, environment, target file name
