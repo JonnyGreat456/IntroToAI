@@ -24,20 +24,15 @@ class build_train:
         x = tf.placeholder(data_type, array_shape, name='ph_x')
         y_ = tf.placeholder(data_type, array_shape, name='ph_y_')
         '''
-
-        x = tf.placeholder(tf.float32, shape = [None, 784], name = 'ph_x') # input images
-        """None - first dimension of x can be of any size; 784 - dimensionality of 28x28 pixel image"""
-        y_ = tf.placeholder(tf.float32, shape = [None, 10], name = 'ph_y') # output targets
-        """10 - each row of y is a one-hot 10-D vector indicating which digit class (0-9) the corresponding image belongs to"""
-
         # OUTPUT VECTOR y MUST BE LENGTH 10, EACH OUTPUT NEURON CORRESPONDS TO A DIGIT 0-9
-        ################### YOUR MODEL GOES HERE ######################################################################
-        ################### YOUR MODEL GOES HERE ######################################################################
-        ################### YOUR MODEL GOES HERE ######################################################################
-        ################### YOUR MODEL GOES HERE ######################################################################
-        ################### YOUR MODEL GOES HERE ######################################################################
-        ################### YOUR MODEL GOES HERE ######################################################################
-        ################### YOUR MODEL GOES HERE ######################################################################
+
+        x = tf.placeholder(tf.float32, [None, 784], name='ph_x')
+        y_ = tf.placeholder(tf.float32, [None, 10], name='ph_y_')
+
+        W1 = tf.Variable(tf.zeroes([784, 10]), name='W1')
+        b1 = tf.Variable(tf.zeroes([10]), name='b1')
+
+        y = tf.nn.softmax(tf.matmul(x, W1) + b1, name='op_y')
 
 
         # LOSS FUNCTION, PREDICTION FUNCTION, ACCURACY FUNCTIONS
@@ -46,21 +41,19 @@ class build_train:
         EXAMPLE OF NAMING ACCURACY FUNCTION:
         accuracy = tf.reduce_mean(tf.cast(prediction, tf.float32), name='op_accuracy')
         '''
-        ############## YOUR LOSS AND ACCURACY FUNCTIONS GO HERE #######################################################
-        ############## YOUR LOSS AND ACCURACY FUNCTIONS GO HERE #######################################################
-        ############## YOUR LOSS AND ACCURACY FUNCTIONS GO HERE #######################################################
-        ############## YOUR LOSS AND ACCURACY FUNCTIONS GO HERE #######################################################
-        ############## YOUR LOSS AND ACCURACY FUNCTIONS GO HERE #######################################################
+
+        cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indicies=[1]), name='op_loss')
+
+        correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1), name='op_correct')
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float_32), name='op_accuracy')
 
         ############# END OF NEURAL NETWORK MODEL ##########################
 
         ############# CONSTRUCT TRAINING FUNCTION ##########################
 
         # TRAINING FUNCTION SHOULD USE YOUR LOSS FUNCTION TO OPTIMIZE THE MODEL PARAMETERS
-        ############## YOUR TRAINING FUNCTION GOES HERE ###############################################################
-        ############## YOUR TRAINING FUNCTION GOES HERE ###############################################################
-        ############## YOUR TRAINING FUNCTION GOES HERE ###############################################################
-        ############## YOUR TRAINING FUNCTION GOES HERE ###############################################################
+
+        train_step = tf.train.GradientDecsentOptimizer(0.5).minimize(cross_entropy, name='op_train')
 
         ############# END OF TRAINING FUNCTION #############################
 
@@ -70,12 +63,20 @@ class build_train:
         sess = tf.InteractiveSession()                                      # DO NOT EDIT
         sess.run(tf.global_variables_initializer())                         # DO NOT EDIT
 
-        ############## YOUR TRAINING LOOP CODE GOES HERE #############################################################
-        ############## YOUR TRAINING LOOP CODE GOES HERE #############################################################
-        ############## YOUR TRAINING LOOP CODE GOES HERE #############################################################
-        ############## YOUR TRAINING LOOP CODE GOES HERE #############################################################
-        ############## YOUR TRAINING LOOP CODE GOES HERE #############################################################
-        ############## YOUR TRAINING LOOP CODE GOES HERE #############################################################
+        for i in range(0,1000):
+            batch_xs, batch_ys = mnist.train.next_batch(100)
+            sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
+            if i % 100 == 1:
+                print('Accuracy Train:')
+                batch_xs, batch_ys = mnist.train.next_batch(100)
+                print(sess.run(accuracy, feed_dict={x: batch_xs, y_: batch_ys}))
+                print('Accuracy Validation:')
+                batch_xs, batch_ys = mnist.validation.next_batch(100)
+                print(sess.run(accuracy, feed_dict={x: batch_xs, y_: batch_ys}))
+                print('Accuracy Test:')
+                batch_xs, batch_ys = mnist.test.next_batch(100)
+                print(sess.run(accuracy, feed_dict={x: batch_xs, y_: batch_ys}))
+
 
         ############# END OF TRAINING SESSION ##############################
 
@@ -93,4 +94,4 @@ class build_train:
         ############## YOUR MODEL ACCURCY PLOT CODE GOES HERE ########################################################
         ############## YOUR MODEL ACCURCY PLOT CODE GOES HERE ########################################################
 
-        ############# END OF ACCURACY PLOT ################################
+############# END OF ACCURACY PLOT ################################
