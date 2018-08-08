@@ -24,6 +24,12 @@ class build_train:
         x = tf.placeholder(data_type, array_shape, name='ph_x')
         y_ = tf.placeholder(data_type, array_shape, name='ph_y_')
         '''
+
+        x = tf.placeholder(tf.float32, shape = [None, 784], name = 'ph_x') # input images
+        """None - first dimension of x can be of any size; 784 - dimensionality of 28x28 pixel image"""
+        y_ = tf.placeholder(tf.float32, shape = [None, 10], name = 'ph_y') # output targets
+        """10 - each row of y is a one-hot 10-D vector indicating which digit class (0-9) the corresponding image belongs to"""
+
         # OUTPUT VECTOR y MUST BE LENGTH 10, EACH OUTPUT NEURON CORRESPONDS TO A DIGIT 0-9
         ################### YOUR MODEL GOES HERE ######################################################################
         ################### YOUR MODEL GOES HERE ######################################################################
@@ -88,5 +94,3 @@ class build_train:
         ############## YOUR MODEL ACCURCY PLOT CODE GOES HERE ########################################################
 
         ############# END OF ACCURACY PLOT ################################
-
-
