@@ -70,6 +70,12 @@ class build_train:
                 print('Accuracy Train:')
                 batch_xs, batch_ys = mnist.train.next_batch(100)
                 print(sess.run(accuracy, feed_dict={x: batch_xs, y_: batch_ys}))
+                print('Accuracy Validation:')
+                batch_xs, batch_ys = mnist.validation.next_batch(100)
+                print(sess.run(accuracy, feed_dict={x: batch_xs, y_: batch_ys}))
+                print('Accuracy Test:')
+                batch_xs, batch_ys = mnist.test.next_batch(100)
+                print(sess.run(accuracy, feed_dict={x: batch_xs, y_: batch_ys}))
 
 
         ############# END OF TRAINING SESSION ##############################
