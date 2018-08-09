@@ -30,8 +30,8 @@ class build_train:
         x = tf.placeholder(tf.float32, [None, 784], name='ph_x')
         y_ = tf.placeholder(tf.float32, [None, 10], name='ph_y_')
 
-        W1 = tf.Variable(tf.zeroes([784, 10]), name='W1')
-        b1 = tf.Variable(tf.zeroes([10]), name='b1')
+        W1 = tf.Variable(tf.zeros([784, 10]), name='W1')
+        b1 = tf.Variable(tf.zeros([10]), name='b1')
 
         y = tf.nn.softmax(tf.matmul(x, W1) + b1, name='op_y')
 
@@ -43,10 +43,10 @@ class build_train:
         accuracy = tf.reduce_mean(tf.cast(prediction, tf.float32), name='op_accuracy')
         '''
 
-        cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indicies=[1]), name='op_loss')
+        cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]), name='op_loss')
 
         correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1), name='op_correct')
-        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float_32), name='op_accuracy')
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), name='op_accuracy')
 
         ############# END OF NEURAL NETWORK MODEL ##########################
 
@@ -54,7 +54,7 @@ class build_train:
 
         # TRAINING FUNCTION SHOULD USE YOUR LOSS FUNCTION TO OPTIMIZE THE MODEL PARAMETERS
 
-        train_step = tf.train.GradientDecsentOptimizer(0.5).minimize(cross_entropy, name='op_train')
+        train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy, name='op_train')
 
         ############# END OF TRAINING FUNCTION #############################
 
@@ -66,7 +66,7 @@ class build_train:
         acc_train = []
         acc_valid = []
         acc_test = []
-        for i in range(0,1000):
+        for i in range(0,1100):
             batch_xs, batch_ys = mnist.train.next_batch(100)
             sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
             if i % 100 == 1:
@@ -97,15 +97,17 @@ class build_train:
         ############# END OF SAVE MODEL ####################################
 
         ############# OUTPUT ACCURACY PLOT ################################
-        x = range(0, 1000, 100)
+        x = range(0, 1100, 100)
         plt.figure(1)
         ax = plt.subplot()
-        ax.plot(x, acc_train, 'r-', label = 'Training', x, acc_valid, 'b-', label = 'Validation', x, acc_test, 'g-', label = 'Testing')
-        ax.xlabel('Iterations')
-        ax.ylabel('Accuracy')
-        ax.title('Plot of Accuracy over 1000 Iterations')
+        ax.plot(x, acc_train, 'r-', label = 'Training')
+        ax.plot(x, acc_valid, 'b-', label = 'Validation')
+        ax.plot(x, acc_test, 'g-', label = 'Testing')
+        ax.set_xlabel('Iterations')
+        ax.set_ylabel('Accuracy')
+        ax.set_title('Plot of Accuracy over 1000 Iterations')
         ax.grid(True)
-        ax.legend(loc = 'upper center', bbox_to_anchor = (0.5, 1.05), ncol = 3, fancybox = True, shadow = True)
+        ax.legend(loc = 'lower right', fancybox = True, shadow = True)
         plt.show()
 
 ############# END OF ACCURACY PLOT ################################
