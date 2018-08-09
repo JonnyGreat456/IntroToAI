@@ -98,7 +98,14 @@ class build_train:
 
         ############# OUTPUT ACCURACY PLOT ################################
         x = range(0, 1000, 100)
-        plt.plot(x, acc_train, 'ro', x, acc_valid, 'bs', x, acc_test, 'g^')
+        plt.figure(1)
+        ax = plt.subplot()
+        ax.plot(x, acc_train, 'r-', label = 'Training', x, acc_valid, 'b-', label = 'Validation', x, acc_test, 'g-', label = 'Testing')
+        ax.xlabel('Iterations')
+        ax.ylabel('Accuracy')
+        ax.title('Plot of Accuracy over 1000 Iterations')
+        ax.grid(True)
+        ax.legend()
         plt.show()
 
 ############# END OF ACCURACY PLOT ################################
