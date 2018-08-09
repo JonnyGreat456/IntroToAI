@@ -2,6 +2,7 @@ import tensorflow as tf
 import numpy as np
 import os
 from tensorflow.examples.tutorials.mnist import input_data
+import matplotlib.pyplot as plt
 
 class build_train:
     def __init__(self):
@@ -62,20 +63,28 @@ class build_train:
         saver = tf.train.Saver()                                            # DO NOT EDIT
         sess = tf.InteractiveSession()                                      # DO NOT EDIT
         sess.run(tf.global_variables_initializer())                         # DO NOT EDIT
-
+        acc_train = []
+        acc_valid = []
+        acc_test = []
         for i in range(0,1000):
             batch_xs, batch_ys = mnist.train.next_batch(100)
             sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
             if i % 100 == 1:
-                print('Accuracy Train:')
+                print('Accuracy Train: ')
                 batch_xs, batch_ys = mnist.train.next_batch(100)
-                print(sess.run(accuracy, feed_dict={x: batch_xs, y_: batch_ys}))
-                print('Accuracy Validation:')
+                acc = sess.run(accuracy, feed_dict={x: batch_xs, y_: batch_ys})
+                acc_train.append(acc)
+                print(acc)
+                print('Accuracy Validation: ')
                 batch_xs, batch_ys = mnist.validation.next_batch(100)
-                print(sess.run(accuracy, feed_dict={x: batch_xs, y_: batch_ys}))
-                print('Accuracy Test:')
+                acc = sess.run(accuracy, feed_dict={x: batch_xs, y_: batch_ys})
+                acc_valid.append(acc)
+                print(acc)
+                print('Accuracy Test: ')
                 batch_xs, batch_ys = mnist.test.next_batch(100)
-                print(sess.run(accuracy, feed_dict={x: batch_xs, y_: batch_ys}))
+                acc = sess.run(accuracy, feed_dict={x: batch_xs, y_: batch_ys})
+                acc_test.append(acc)
+                print(acc)
 
 
         ############# END OF TRAINING SESSION ##############################
@@ -88,10 +97,8 @@ class build_train:
         ############# END OF SAVE MODEL ####################################
 
         ############# OUTPUT ACCURACY PLOT ################################
-
-        ############## YOUR MODEL ACCURCY PLOT CODE GOES HERE ########################################################
-        ############## YOUR MODEL ACCURCY PLOT CODE GOES HERE ########################################################
-        ############## YOUR MODEL ACCURCY PLOT CODE GOES HERE ########################################################
-        ############## YOUR MODEL ACCURCY PLOT CODE GOES HERE ########################################################
+        x = range(0, 1000, 100)
+        plt.plot(x, acc_train, 'ro', x, acc_valid, 'bs', x, acc_test, 'g^')
+        plt.show()
 
 ############# END OF ACCURACY PLOT ################################
