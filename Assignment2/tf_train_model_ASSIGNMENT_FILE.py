@@ -105,7 +105,7 @@ class build_train:
         ax.ylabel('Accuracy')
         ax.title('Plot of Accuracy over 1000 Iterations')
         ax.grid(True)
-        ax.legend()
+        ax.legend(loc = 'upper center', bbox_to_anchor = (0.5, 1.05), ncol = 3, fancybox = True, shadow = True)
         plt.show()
 
 ############# END OF ACCURACY PLOT ################################
