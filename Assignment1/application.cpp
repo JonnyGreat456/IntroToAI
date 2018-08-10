@@ -18,14 +18,8 @@
 
 #include "prx/utilities/communication/tf_broadcaster.hpp"
 
-#include <boost/range/adaptor/map.hpp> //adaptors
-#include <iostream>
+// #include <boost/range/adaptor/map.hpp> //adaptors
 #include <fstream>
-#include <string>
-#include <cstdlib>
-#include <errno.h>
-#include <string.h>
-#include <time.h>
 #include "prx/utilities/definitions/sys_clock.hpp"
 #include <pluginlib/class_list_macros.h>
 #include "prx_core/send_plants_srv.h"
@@ -34,6 +28,7 @@
 #include <boost/assign/list_of.hpp>
 #include "prx/utilities/graph/undirected_node.hpp"
 
+#include <iostream>
 
 PLUGINLIB_EXPORT_CLASS(prx::util::util_application_t, prx::util::util_application_t)
 
@@ -322,62 +317,23 @@ namespace prx
             //Returned vector of coordinates.
             std::vector< std::pair<int, int> > path;
             
+            //path.push_back(std::make_pair(4,4));
 
             // Naive generation of path that has not awareness of the environment
-            /*################COMMENT OUT THE FOLLOWING BLOCK OF CODE TO POPULATE path##################
-            for(int i=initial_i; i<=goal_i; ++i)                                      //################
+            //################COMMENT OUT THE FOLLOWING BLOCK OF CODE TO POPULATE path##################
+           /* for(int i=initial_i; i<=goal_i; ++i)                                      //################
                 path.push_back(std::make_pair(i,initial_j));                          //################            
             for(int i=initial_i; i>=goal_i; --i)                                      //################
                 path.push_back(std::make_pair(i,initial_j));                          //################            
             for(int j=initial_j+1; j<=goal_j; ++j)                                    //################
                 path.push_back(std::make_pair(goal_i,j));                             //################        
             for(int j=initial_j-1; j>=goal_j; --j)                                    //################
-                path.push_back(std::make_pair(goal_i,j));                             //################ 
+                path.push_back(std::make_pair(goal_i,j));   */                          //################ 
             //If using C++, you can choose to populate the following function in search.cpp 
-            //path = searcher->search();*/
+            //path = searcher->search();           
             //################THE PRECEDING CODE SHOULD BE REPLACED BY YOUR SOLUTION####################
 
-            std::string command = "python home/virtualg/prx_core_ws/src/prx_core/prx/utilities/applications/path_finder.py";
-            command += " " + std::to_string(initial_i) + " " + std::to_string(initial_j) + " " + std::to_string(goal_i) + " " + std::to_string(goal_j);
-            command += " " + environment_file + " home/virtualg/prx_core_ws/src/prx_core/prx/utilities/applications/path.txt";
-			// std::system(command.c_str());
-            PRX_PRINT("This finshed second", PRX_TEXT_GREEN);
-
-			// // read from and process path.txt
-            // std::string line;
-            // int num, x, y;
-            // std::ifstream path_file;
-            // try {
-            //     path_file.open("home/virtualg/prx_core_ws/src/prx_core/prx/utilities/applications/path.txt");
-            // } catch (const std::exception& e) {
-            //     PRX_PRINT(e.what(), PRX_TEXT_RED);
-            // }
-
-            // if(errno != 0){
-            //     PRX_PRINT((errno == EWOULDBLOCK), PRX_TEXT_CYAN);
-            //     PRX_FATAL_S(std::strerror(errno));
-            // }
-            
-            // try {
-            //     while(getline(path_file, line))
-            //     {
-            //         int delim = line.find(" ");
-            //         x = std::stoi(line.substr(0, delim));
-            //         y = std::stoi(line.substr(delim + 1, line.length()));
-            //         path.push_back(std::make_pair(x, y));
-            //     }
-            // } catch (const std::exception& e) {
-            //     PRX_PRINT("Exception caught:" << e.what(), PRX_TEXT_RED);
-            // }
-
-
-            PRX_PRINT(std::strerror(errno), PRX_TEXT_RED);
-
-            path_file.close();
-
             //You can invoke your code using an std::system call, or write your code in C++ and include it here, or invoke your code through ROS
-			// need to pass start coords, goal coords, environment, target file name
-            
             //Global variable environment_file has the path to the maze file
             //###############################################################
             //###############################################################
@@ -388,6 +344,27 @@ namespace prx
             //###############################################################
             //###############################################################
             //###############################################################
+            int x, y;
+            std::string command = "python $PRACSYS_PATH/prx_core/prx/utilities/applications/search.py -f ";
+            command += environment_file;
+            command += " -x1 " + std::to_string(initial_i) + " -y1 " + std::to_string(initial_j) + " -x2 " + std::to_string(goal_i) + " -y2 " + std::to_string(goal_j);
+            
+            std::cout << command << std::endl;
+            std::cout << command.c_str() << std::endl;
+            
+            system(command.c_str());
+            
+            std::ifstream infile("/home/postalmist/pathlist/path.txt");
+            
+            if(infile.is_open())
+            {
+			    while(infile >> x >> y)
+			    {
+					path.push_back(std::make_pair(x,y));
+				}	
+				
+				infile.close();
+			}
 
 
             //Once a path has been reconstructed it is returned

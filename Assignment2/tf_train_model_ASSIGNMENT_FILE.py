@@ -2,6 +2,7 @@ import tensorflow as tf
 import numpy as np
 import os
 from tensorflow.examples.tutorials.mnist import input_data
+import matplotlib.pyplot as plt
 
 class build_train:
     def __init__(self):
@@ -29,8 +30,8 @@ class build_train:
         x = tf.placeholder(tf.float32, [None, 784], name='ph_x')
         y_ = tf.placeholder(tf.float32, [None, 10], name='ph_y_')
 
-        W1 = tf.Variable(tf.zeroes([784, 10]), name='W1')
-        b1 = tf.Variable(tf.zeroes([10]), name='b1')
+        W1 = tf.Variable(tf.zeros([784, 10]), name='W1')
+        b1 = tf.Variable(tf.zeros([10]), name='b1')
 
         y = tf.nn.softmax(tf.matmul(x, W1) + b1, name='op_y')
 
@@ -42,10 +43,10 @@ class build_train:
         accuracy = tf.reduce_mean(tf.cast(prediction, tf.float32), name='op_accuracy')
         '''
 
-        cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indicies=[1]), name='op_loss')
+        cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]), name='op_loss')
 
         correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1), name='op_correct')
-        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float_32), name='op_accuracy')
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), name='op_accuracy')
 
         ############# END OF NEURAL NETWORK MODEL ##########################
 
@@ -53,7 +54,7 @@ class build_train:
 
         # TRAINING FUNCTION SHOULD USE YOUR LOSS FUNCTION TO OPTIMIZE THE MODEL PARAMETERS
 
-        train_step = tf.train.GradientDecsentOptimizer(0.5).minimize(cross_entropy, name='op_train')
+        train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy, name='op_train')
 
         ############# END OF TRAINING FUNCTION #############################
 
@@ -62,20 +63,28 @@ class build_train:
         saver = tf.train.Saver()                                            # DO NOT EDIT
         sess = tf.InteractiveSession()                                      # DO NOT EDIT
         sess.run(tf.global_variables_initializer())                         # DO NOT EDIT
-
-        for i in range(0,1000):
+        acc_train = []
+        acc_valid = []
+        acc_test = []
+        for i in range(0,1100):
             batch_xs, batch_ys = mnist.train.next_batch(100)
             sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
             if i % 100 == 1:
-                print('Accuracy Train:')
+                print('Accuracy Train: ')
                 batch_xs, batch_ys = mnist.train.next_batch(100)
-                print(sess.run(accuracy, feed_dict={x: batch_xs, y_: batch_ys}))
-                print('Accuracy Validation:')
+                acc = sess.run(accuracy, feed_dict={x: batch_xs, y_: batch_ys})
+                acc_train.append(acc)
+                print(acc)
+                print('Accuracy Validation: ')
                 batch_xs, batch_ys = mnist.validation.next_batch(100)
-                print(sess.run(accuracy, feed_dict={x: batch_xs, y_: batch_ys}))
-                print('Accuracy Test:')
+                acc = sess.run(accuracy, feed_dict={x: batch_xs, y_: batch_ys})
+                acc_valid.append(acc)
+                print(acc)
+                print('Accuracy Test: ')
                 batch_xs, batch_ys = mnist.test.next_batch(100)
-                print(sess.run(accuracy, feed_dict={x: batch_xs, y_: batch_ys}))
+                acc = sess.run(accuracy, feed_dict={x: batch_xs, y_: batch_ys})
+                acc_test.append(acc)
+                print(acc)
 
 
         ############# END OF TRAINING SESSION ##############################
@@ -88,12 +97,17 @@ class build_train:
         ############# END OF SAVE MODEL ####################################
 
         ############# OUTPUT ACCURACY PLOT ################################
+        x = range(0, 1100, 100)
+        plt.figure(1)
+        ax = plt.subplot()
+        ax.plot(x, acc_train, 'r-', label = 'Training')
+        ax.plot(x, acc_valid, 'b-', label = 'Validation')
+        ax.plot(x, acc_test, 'g-', label = 'Testing')
+        ax.set_xlabel('Iterations')
+        ax.set_ylabel('Accuracy')
+        ax.set_title('Plot of Accuracy over 1000 Iterations')
+        ax.grid(True)
+        ax.legend(loc = 'lower right', fancybox = True, shadow = True)
+        plt.show()
 
-        ############## YOUR MODEL ACCURCY PLOT CODE GOES HERE ########################################################
-        ############## YOUR MODEL ACCURCY PLOT CODE GOES HERE ########################################################
-        ############## YOUR MODEL ACCURCY PLOT CODE GOES HERE ########################################################
-        ############## YOUR MODEL ACCURCY PLOT CODE GOES HERE ########################################################
-
-        ############# END OF ACCURACY PLOT ################################
-
-
+############# END OF ACCURACY PLOT ################################

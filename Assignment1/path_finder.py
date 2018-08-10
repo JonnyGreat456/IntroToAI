@@ -1,39 +1,33 @@
 import math
+import os
 import sys
 
 class Node:
-    def __init__(self, x, y, g = 0, h = 0, parent = None):
+    def __init__(self, x, y, value):
         self.x = x # row
         self.y = y # column
-        self.f = g + WEIGHT * h # path cost + heuristic
-        self.g = g # path cost
-        self.h = h # heuristic
-        self.parent = parent
-    def update_f(self, node):
-        self.f = node.f
-    def location(self):
-        return (self.x, self.y)
-########################################################################################
-### global variables
-########################################################################################
-ROW_NUM = 0
-COL_NUM = 0
-START_NODE = None
-GOAL_NODE = None
-WEIGHT = 1
-ZERO_HEURISTICS = 1
-Output_File = None
-MAP = []
-PATH_COST = 0
-PATH = []
-#numExpansions = 0
-#numSteps = 0
+        self.value = value # 1 for unblocked, 0 for blocked
+        self.f = 0 # path cost + heuristic
+        self.g = 0 # path cost
+        self.h = 0 # heuristic
+        self.parent = 0
 
-########################################################################################
-### functions
-########################################################################################
+def generateMap(map_filename):
+    map_file = open(map_filename, "r")
+    ROW_NUM = int(map_file.readline())
+    COL_NUM = int(map_file.readline())
+    MAP = []
 
-def generateNeighbors(origin_node):
+    for i in range(ROW_NUM):
+        line = map_file.readline().split()
+        num_list = []
+        for j in range(COL_NUM):
+            num_list.append(int(line[j]))
+        MAP.append(num_list)
+
+    return MAP
+
+def generateNeighbors(map, origin_node):
     """
         Args:
             map: 2D Array of 0 and 1 values indicating blocked (0) and unblocked (1) cells
@@ -43,67 +37,129 @@ def generateNeighbors(origin_node):
     """
 
     neighbors = []
-    x = origin_node.location()[0]
-    y = origin_node.location()[1]
+    x = origin_node.x
+    y = origin_node.y
+
     if(x - 1 < 0):
         pass
     else:
-        if(MAP[x-1][y] == 1):#getting UP
-            neighbors.append(Node(x-1,y, parent=origin_node))
-    if(x + 1 >= len(MAP)):
+        if(map[x - 1][y] == 1):
+            up = Node(x - 1, y, map[x - 1][y])
+            neighbors.append(up)
+
+    if(x + 1 >= len(map)):
         pass
     else:
-        if(MAP[x+1][y] == 1):# getting DOWN
-            neighbors.append(Node(x+1,y, parent=origin_node))
-           
+        if(map[x + 1][y] == 1):
+            down = Node(x + 1, y, map[x + 1][y])
+            neighbors.append(down)
+
     if(y - 1 < 0):
         pass
     else:
-        if(MAP[x][y-1] == 1):#getting LEFT
-            neighbors.append(Node(x,y-1, parent=origin_node))
-    if(y + 1 >= len(MAP[x])):
+        if(map[x][y - 1] == 1):
+            left = Node(x, y - 1, map[x][y - 1])
+            neighbors.append(left)
+
+    if(y + 1 >= len(map[x])):
         pass
     else:
-        if(MAP[x][y+1] == 1):# getting RIGHT
-            neighbors.append(Node(x,y+1, parent=origin_node))
+        if(map[x][y + 1] == 1):
+            right = Node(x, y + 1, map[x][y + 1])
+            neighbors.append(right)
+
     return neighbors
 
-def h(node): 
-    """ function will compute the heuristic. It will compute the manhattan distance if zero_heuristic variable is one and
-    and the zero heuristic if zero is zero """
-    return ZERO_HEURISTICS * round( math.sqrt(((GOAL_NODE.x - node.x)**2)+((GOAL_NODE.y - node.y)**2)), 2)
+def merge(arr, l, m, r):
+    n1 = m - l + 1
+    n2 = r - m
 
-def g(node):
-    """ returns cost from the origin node to any node """
-    #return round( math.sqrt(((node.x - origin_node.x)**2)+((node.y - origin_node.y)**2)), 2)
-    return node.parent.g + 1
+    L = [0] * (n1)
+    R = [0] * (n2)
 
-def min_f(queue):
-    """ finds the index of the node with the lowest f value in open_list """
-    min_value_index = 0
-    if(len(queue) == 1):
-        return 0
-    for i in range(1,len(queue)):
-        if(queue[min_value_index].f <= queue[i].f):
-            pass
+    for i in range(0, n1):
+        L[i] = arr[l + i]
+
+    for j in range(0, n2):
+        R[j] = arr[m + 1 + j]
+
+    i = 0
+    j = 0
+    k = l
+
+    while((i < n1) and (j < n2)):
+        if(L[i].f <= R[j].f):
+            arr[k] = L[i]
+            i += 1
         else:
-            min_value_index = i
-    return min_value_index
+            arr[k] = R[j]
+            j += 1
+        k += 1
 
-def path_build(node):
-    """ This function will iterate through a path through a list of its parents """
-    rPath = []
-    ptr = node
-    pathCost = node.g
-    while(ptr != None):
-        rPath.append((ptr.x,ptr.y))
-        ptr = ptr.parent
-    #numSteps = len(rPath) - 1
-    rPath.reverse()
-    return pathCost, rPath
-        
-        
-def PathFinder():
+    while(i < n1):
+        arr[k] = L[i]
+        i += 1
+        k += 1
+
+    while(j < n2):
+        arr[k] = R[j]
+        j += 1
+        k += 1
+
+def MergeSort(arr, l, r): # implementation of merge sort for sorting open list
+    if(l < r):
+        m = (l + (r - 1)) / 2
+        MergeSort(arr, l, m)
+        MergeSort(arr, m + 1, r)
+        merge(arr, l, m, r)
+
+def sort_node_list(node_list): # merge sort wrapper function
+    MergeSort(node_list, 0, len(node_list) - 1)
+
+def isNodeInList(node_list, a_node):
+    x = a_node.x
+    y = a_node.y
+    for node in node_list:
+        x2 = node.x
+        y2 = node.y
+        if(x == x2 and y == y2):
+            return True
+        else:
+            continue
+    return False
+
+def isNodeInList2(tuple_list, a_node):
+    x = a_node.x
+    y = a_node.y
+    for t in tuple_list:
+        x2 = t[0]
+        y2 = t[1]
+        if(x == x2 and y == y2):
+            return True
+        else:
+            continue
+    return False
+
+def g(origin_node, node):
+    """ returns cost from the origin node to any node """
+    return round(math.sqrt(((node.x - origin_node.x)**2) + ((node.y - origin_node.y)**2)), 2)
+
+def h(origin_node, goal_node):
+    """ function will compute the heuristic. """
+    return round((math.fabs(origin_node.x - goal_node.x) + math.fabs(origin_node.y - goal_node.y)), 2)
+
+def find(queue, targetNode):
+    """ looks for a node in a queue and returns its index or -1 if node is not found """
+    x = targetNode.x
+    y = targetNode.y
+    for i in range(0,len(queue)):
+        x2 = queue[i].x
+        y2 = queue[i].y
+        if(x == x2 and y == y2):
+            return i
+    return -1
+
+def PathFinder(map, initial_x, initial_y, goal_x, goal_y):
     """
         Args:
             map: 2D Array of 0 and 1 values indicating blocked (0) and unblocked (1) cells
@@ -116,78 +172,44 @@ def PathFinder():
                 i.e. path from (0,0) -> (2,2): ((0,0), (0,1), (1,1), (1,2), (2,2))
     """
 
-    #pathExists = True # boolean flag for whether or not path exists, assumed True until determined False don't think we need this
-    global START_NODE, GOAL_NODE, PATH_COST, PATH
+    pathExists = True # boolean flag for whether or not path exists, assumed True until determined False
+    numExpansions = 0
 
     open_list = []
-    open_list.append(START_NODE)
+    open_list.append(Node(initial_x, initial_y, map[initial_x][initial_y]))
     closed_list = []
-    neighbors = []
 
     while(len(open_list) != 0):
-        q = open_list.pop(min_f(open_list))
-        if(q.x == GOAL_NODE.x and q.y == GOAL_NODE.y):
-            PATH_COST, PATH = path_build(q)
-            return PATH_COST, PATH
-        if q not in closed_list:
-            neighbors = generateNeighbors(q)
+        sort_node_list(open_list) # determine lowest f score in open_list by sorting on f score
+        q = open_list.pop(0)
+        if(q.x == goal_x and q.y == goal_y):
+            closed_list.append((q.x, q.y))
+            print('Number of Expansions: %d' % numExpansions)
+            return closed_list
+        else:
+            closed_list.append((q.x, q.y))
+            neighbors = generateNeighbors(map, q)
+
             for n in neighbors:
-                n.g = g(n)
-                n.h = h(n)
-                n.f = n.g + (WEIGHT * n.h)
-                n.parent = q
-                if n not in open_list:
-                    open_list.append(n)
-                    #numExpansion += 1
+                if(isNodeInList2(closed_list, n)):
+                    continue
                 else:
-                    found_n = open_list[open_list.index(n)]
-                    if(n.f < found_n.f):
-                        found_n.update_f(n)
-       
-# create a generateNeighbors(Node) function
+                    numExpansions += 1
+                    n.g = q.g + g(q, n)
+                    n.h = h(n, Node(goal_x, goal_y, map[goal_x][goal_y]))
+                    n.f = n.g + n.h
+                    n.parent = q
 
-def processMap(map_file_path):
-    global ROW_NUM, COL_NUM, MAP
-    map_file = open(map_file_path, "r")
-    ROW_NUM = int(map_file.readline())
-    COL_NUM = int(map_file.readline())
-
-    for i in range(ROW_NUM):
-        line = map_file.readline().split()
-        num_list = []
-        for j in range(COL_NUM):
-            num_list.append(int(line[j]))
-        MAP.append(num_list)
-
-def getArgs():
-    # retrieves command line arguments and stores them in global vars
-    global START_NODE, GOAL_NODE, Output_File
-    START_NODE = Node(int(sys.argv[1]), int(sys.argv[2]))
-    GOAL_NODE = Node(int(sys.argv[3]), int(sys.argv[4]))
-    enviroment_file_path = sys.argv[5]
-    Output_File = sys.argv[6]
-
-    processMap(enviroment_file_path)
-
-def output_to_file():
-    global Output_File, PATH_COST, PATH
-
-    try:
-        output_file = open(Output_File, "w+")
-    except:
-        print "Failed to open " + Output_File
-
-    print PATH
-    for node in PATH:
-        try:
-            output_file.write("%d %d\n" % (node[0], node[1]))
-        except:
-            print "Failed to write"
-    
-    output_file.close()
+                    if not isNodeInList(open_list, n):
+                        open_list.append(n)
+                    else:
+                        found_n = open_list[find(open_list, n)]
+                        if(n.f < found_n.f):
+                            found_n.f = n.f
 
 
-getArgs()
-PathFinder()
-output_to_file()
-print "This finished first"
+# Main Execution Test
+prefix = os.environ['PRACSYS_PATH']
+map = generateMap(prefix + '/prx_core/launches/maze')
+path = PathFinder(map, 0, 0, 3, 8)
+print(path)
