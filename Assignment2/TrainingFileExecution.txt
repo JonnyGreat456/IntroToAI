@@ -5,3 +5,7 @@ Type python to start python interpreter
 import tf_train_model_ASSIGNMENT_FILE as tm
 model_train = tm.build_train()
 model_train.build_train_network(0)
+
+import tf_evaluate_model_code as emc
+model_eval = emc.evaluate_model()
+model_eval.evaluate_model(0)
