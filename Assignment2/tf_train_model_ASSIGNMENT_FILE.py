@@ -54,7 +54,7 @@ class build_train:
 
         # TRAINING FUNCTION SHOULD USE YOUR LOSS FUNCTION TO OPTIMIZE THE MODEL PARAMETERS
 
-        train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy, name='op_train')
+        train_step = tf.train.GradientDescentOptimizer(0.45).minimize(cross_entropy, name='op_train')
 
         ############# END OF TRAINING FUNCTION #############################
 

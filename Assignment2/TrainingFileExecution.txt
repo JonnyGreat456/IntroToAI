@@ -6,6 +6,20 @@ import tf_train_model_ASSIGNMENT_FILE as tm
 model_train = tm.build_train()
 model_train.build_train_network(0)
 
+0: learning rate = 0.45, Gradient Descent Optimizer
+
+Last Iteration:
+Accuracy Train: 
+0.94
+Accuracy Validation: 
+0.89
+Accuracy Test: 
+0.93
+
 import tf_evaluate_model_code as emc
 model_eval = emc.evaluate_model()
 model_eval.evaluate_model(0)
+
+Model 0:
+	Accuracy:
+	0.9194
