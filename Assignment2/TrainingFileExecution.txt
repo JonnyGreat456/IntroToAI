@@ -30,3 +30,7 @@ model_eval.evaluate_model(0)
 Model 0:
 	Accuracy:
 	0.9194
+
+Model 1:
+	Accuracy:
+	0.9987
