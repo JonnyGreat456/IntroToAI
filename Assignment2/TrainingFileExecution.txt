@@ -16,6 +16,13 @@ Accuracy Validation:
 Accuracy Test: 
 0.93
 
+1: Neural Network, learning rate = 1e-4, ADAM Optimizer
+
+Last Iteration:
+step 10000, training accuracy 1
+step 10000, validation accuracy 0.99
+step 10000, testing accuracy 0.99
+
 import tf_evaluate_model_code as emc
 model_eval = emc.evaluate_model()
 model_eval.evaluate_model(0)
